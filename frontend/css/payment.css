@@ -1,0 +1,86 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color:rgb(22, 66, 60);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.payment-container {
+    background-color: rgb(233, 239, 236);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: rgb(22, 66, 60);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    color: rgb(22, 66, 60);
+}
+
+input {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgb(22, 66, 60);
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.card-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-details div {
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.card-details div:last-child {
+    margin-right: 0;
+}
+
+.submit-btn {
+    background-color: rgb(22, 66, 60);
+    color: white;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+#congrats-message {
+    text-align: center;
+    padding: 20px;
+    background-color: rgb(233, 239, 236);
+    border: 1px solid rgb(22, 66, 60);
+    margin-top: 20px;
+    border-radius: 8px;
+}

@@ -2,165 +2,182 @@
 // User Authentication Logic
 // -----------------------
 
-// Signup function to send data to backend
+/* 1. Signup functionality */
 const signupForm = document.getElementById('signup-form');
 signupForm?.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  
-  const formData = {
-    username: document.getElementById('username').value,
-    email: document.getElementById('email').value,
-    password: document.getElementById('password').value,
-  };
-
-  try {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    // Check if the response is valid JSON
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Signup failed:', errorText);
-      alert('Signup failed: ' + errorText); // Handle plain text error message
-      return;
+    event.preventDefault();
+    const formData = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+    };
+    try {
+        const response = await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('Signup successful');
+            window.location.href = 'login.html';
+        } else {
+            alert('Signup failed: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error during signup:', error);
+        alert('An error occurred during signup');
     }
-
-    const result = await response.json();
-    if (result.success) {
-      alert('Signup successful');
-      // Redirect to login page or dashboard
-      window.location.href = 'login.html';
-    } else {
-      alert('Signup failed: ' + result.message);
-    }
-  } catch (error) {
-    console.error('Error during signup:', error);
-    alert('An error occurred during signup');
-  }
 });
 
-
-// Login function to send data to backend
+/* 2. Login functionality */
 const loginForm = document.getElementById('login-form');
 loginForm?.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-
-  // Ensure that both username and password are present
-  if (!username || !password) {
-    alert('Please fill in both username and password.');
-    return;
-  }
-
-  const formData = { username, password };
-
-  try {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    // Check if the response is valid JSON
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Login failed:', errorText);
-      alert('Login failed: ' + errorText); // Handle plain text error message
-      return;
+    event.preventDefault();
+    const formData = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+    };
+    try {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        });
+        const result = await response.json();
+        if (result.success && result.user && result.user.username) {
+            console.log(result.user); // Log user details to the console
+            localStorage.setItem('user', JSON.stringify(result.user)); // Save user details locally
+            localStorage.setItem('token', result.token); // Save the JWT token locally
+            replaceAuthButtonsWithUsername(result.user.username); 
+            window.location.href = 'index.html';
+        } else {
+            alert('Login failed: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+        alert('An error occurred during login');
     }
-
-    const result = await response.json();
-    if (result.success) {
-      alert('Login successful');
-      window.location.href = 'index.html'; // Redirect to dashboard or home page
-    } else {
-      alert('Login failed: ' + result.message);
-    }
-  } catch (error) {
-    console.error('Error during login:', error);
-    alert('An error occurred during login');
-  }
 });
 
+function replaceAuthButtonsWithUsername(username) {
+    const authButtons = document.getElementById('auth-buttons');
+    if (authButtons) {
+        const profileContainer = document.createElement('div');
+        profileContainer.classList.add('profile-container', 'dropdown');
+        profileContainer.style.position = 'relative';
 
-// Data for SDG 1 chart (Poverty Levels)
+        // Create the profile picture circle
+        const profilePic = document.createElement('div');
+        profilePic.classList.add('profile-picture');
+        profilePic.style.width = '50px';
+        profilePic.style.height = '50px';
+        profilePic.style.borderRadius = '50%';
+        profilePic.style.backgroundColor = 'rgb(196, 218, 210)';
+        profilePic.style.color = 'rgb(22, 66, 60)';
+        profilePic.style.display = 'flex';
+        profilePic.style.alignItems = 'center';
+        profilePic.style.justifyContent = 'center';
+        profilePic.style.fontWeight = 'bold';
+        profilePic.style.fontSize = '1.2em';
+        profilePic.textContent = username.substring(0, 2).toUpperCase(); // Display first 2 letters of username
+
+        profilePic.style.cursor = 'pointer'; // Make profile pic clickable
+
+        // Create the dropdown menu
+        const dropdownMenu = document.createElement('div');
+        dropdownMenu.classList.add('dropdown-menu');
+        dropdownMenu.style.position = 'absolute';
+        dropdownMenu.style.top = '100%';
+        dropdownMenu.style.left = '0';
+        dropdownMenu.style.backgroundColor = '#fff';
+        dropdownMenu.style.padding = '10px';
+        dropdownMenu.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.1)';
+        dropdownMenu.style.display = 'none'; // Hide dropdown initially
+
+        // Create logout option
+        const logoutOption = document.createElement('button');
+        logoutOption.textContent = 'Log Out';
+        logoutOption.style.display = 'block';
+        logoutOption.style.margin = '5px 0';
+        logoutOption.addEventListener('click', handleLogout);
+
+        dropdownMenu.appendChild(logoutOption);
+
+        // Toggle dropdown on profile picture click
+        profilePic.addEventListener('click', () => {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Append the profile picture and dropdown menu to the container
+        profileContainer.appendChild(profilePic);
+        profileContainer.appendChild(dropdownMenu);
+
+        // Replace auth buttons with the profile container
+        authButtons.replaceWith(profileContainer);
+    }
+}
+
+// Handle logout function
+function handleLogout() {
+    // Clear user data from local storage
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    
+    // Redirect to login page
+    window.location.href = 'login.html';
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const storedUser = localStorage.getItem('user');
+
+    if (storedUser) {
+        const user = JSON.parse(storedUser);
+        if(user && user.username) {
+        replaceAuthButtonsWithUsername(user.username);
+        } else {
+            console.error('User object is missing username');
+        }
+    } else {
+        console.error('No user object found in local storage');
+    }
+});
+
+// -----------------------
+// Chart Rendering Logic
+// -----------------------
 const sdg1Data = {
-  labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'], // X-axis (Years)
-  datasets: [{
-      label: 'People in Poverty (millions)',
-      data: [750, 720, 700, 680, 660, 640, 655, 575], // Y-axis data (Poverty levels)
-      backgroundColor: 'rgba(255, 136, 91, 0.5)', // Transparent fill
-      borderColor: '#FF885B', // Border color matching theme
-      borderWidth: 2
-  }]
+    labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [{
+        label: 'People in Poverty (millions)',
+        data: [750, 720, 700, 680, 660, 640, 655, 575],
+        backgroundColor: 'rgba(255, 136, 91, 0.5)',
+        borderColor: '#FF885B',
+        borderWidth: 2
+    }]
 };
 
-// Data for SDG 2 chart (Hunger Levels)
 const sdg2Data = {
-  labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
-  datasets: [{
-      label: 'People Facing Hunger (millions)',
-      data: [630, 640, 650, 670, 680, 690, 700, 600], // Y-axis data (Hunger levels)
-      backgroundColor: 'rgba(22, 66, 60, 0.5)',
-      borderColor: '#557C56',
-      borderWidth: 2
-  }]
+    labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [{
+        label: 'People Facing Hunger (millions)',
+        data: [630, 640, 650, 670, 680, 690, 700, 600],
+        backgroundColor: 'rgba(22, 66, 60, 0.5)',
+        borderColor: '#557C56',
+        borderWidth: 2
+    }]
 };
 
-// Configuration for SDG 1 chart
-const sdg1Config = {
-  type: 'line', // Use 'line' for time-series charts
-  data: sdg1Data,
-  options: {
-      scales: {
-          y: {
-              beginAtZero: true // Start Y-axis at zero
-          }
-      },
-      plugins: {
-          title: {
-              display: true,
-              text: 'Poverty Levels Over Time'
-          }
-      }
-  }
-};
+const sdg1Chart = new Chart(document.getElementById('sdg1Chart'), {
+    type: 'line',
+    data: sdg1Data,
+    options: { scales: { y: { beginAtZero: true } } }
+});
 
-// Configuration for SDG 2 chart
-const sdg2Config = {
-  type: 'line',
-  data: sdg2Data,
-  options: {
-      scales: {
-          y: {
-              beginAtZero: true
-          }
-      },
-      plugins: {
-          title: {
-              display: true,
-              text: 'Hunger Levels Over Time'
-          }
-      }
-  }
-};
-
-// Render the charts
-const sdg1Chart = new Chart(
-  document.getElementById('sdg1Chart'),
-  sdg1Config
-);
-
-const sdg2Chart = new Chart(
-  document.getElementById('sdg2Chart'),
-  sdg2Config
-);
+const sdg2Chart = new Chart(document.getElementById('sdg2Chart'), {
+    type: 'line',
+    data: sdg2Data,
+    options: { scales: { y: { beginAtZero: true } } }
+});

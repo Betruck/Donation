@@ -44,8 +44,8 @@ exports.login = (req, res) => {
     console.log('Login Request Body:', req.body);
     const { username, password } = req.body;
 
-    const query = 'SELECT * FROM users WHERE username = ?'; // Login via username, adjust to email if needed
-    db.query(query, [username], (error, result) => {
+    const sql = 'SELECT * FROM users WHERE username = ?'; // Login via username, adjust to email if needed
+    db.query(sql, [username], (error, result) => {
         if (error) {
             console.error('Database error:', error);
             return res.status(500).json({ success: false, message: 'Database error during login' });
@@ -56,6 +56,7 @@ exports.login = (req, res) => {
         }
 
         const user = result[0];
+        
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
                 console.error('Error during password comparison:', err);
@@ -66,7 +67,15 @@ exports.login = (req, res) => {
                 return res.status(401).json({ success: false, message: 'Invalid password' });
             }
 
-            return res.status(200).json({ success: true, message: 'Login successful' });
+            // Include the user object in the response
+            return res.status(200).json({
+                success: true,
+                message: 'Login successful',
+                user: { // Send the user object
+                    username: user.username,
+                    email: user.email
+                }
+            });
         });
     });
 };

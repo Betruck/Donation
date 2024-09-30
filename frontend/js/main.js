@@ -1,7 +1,3 @@
-// -----------------------
-// User Authentication Logic
-// -----------------------
-
 /* 1. Signup functionality */
 const signupForm = document.getElementById('signup-form');
 signupForm?.addEventListener('submit', async (event) => {
@@ -128,8 +124,6 @@ function handleLogout() {
     window.location.href = 'login.html';
 }
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const storedUser = localStorage.getItem('user');
 
@@ -144,6 +138,45 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('No user object found in local storage');
     }
 });
+
+// Fetch all donation buttons once DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const donationButtons = document.querySelectorAll('[data-amount]');
+    
+    donationButtons.forEach(button => {
+        button.addEventListener('click', handleDonationClick);
+    });
+});
+
+// Handle donation click
+function handleDonationClick(event) {
+    event.preventDefault();  // Stop any default button action early
+    
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user');
+    
+    if (!storedUser) {
+        // User is not logged in
+        alert('Please log in to make a donation.');
+        window.location.href = 'login.html';  // Redirect to login page
+        return;  // Exit the function to stop further execution
+    }
+
+    // User is logged in
+    const user = JSON.parse(storedUser);
+    let amount = event.target.getAttribute('data-amount');
+    
+    if (amount === 'custom-amount') {
+        const customAmountInput = document.querySelector('.custom-amount');
+        if (customAmountInput) {
+            amount = customAmountInput.value;
+        }
+    }
+
+    console.log(`User: ${user.username}, Donation Amount: ${amount}`);
+    // Proceed with the donation logic using `amount` and `user`
+
+}
 
 // -----------------------
 // Chart Rendering Logic

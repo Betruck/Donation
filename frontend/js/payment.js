@@ -5,13 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add click event listener to each button
     donateButtons.forEach(button => {
         button.addEventListener('click', (event) => {
-            event.preventDefault();  // Prevent the default behavior (if it's a form button)
+            event.preventDefault();  // Prevent default form behavior
             
             let amount = event.target.getAttribute('data-amount');
   
             // Check if the amount is 'custom-amount', and retrieve the value from the input field
             if (amount === 'custom-amount') {
-                const customAmountInput = document.getElementsByClassName('custom-amount');
+                // Select the custom donation input field
+                const customAmountInput = document.getElementsByClassName('custom-amount')[0]; 
                 if (customAmountInput) {
                     amount = customAmountInput.value;
                 }

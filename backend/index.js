@@ -4,20 +4,24 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes');
 
+dotenv.config();
+const app = express();
+
+// CORS options
 const corsOptions = {
-  origin: 'https://donashion.netlify.app', // Replace this with your frontend URL
+  origin: ['https://donashion.netlify.app'],  // Your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
 };
 
-dotenv.config();
-const app = express();
+// Enable CORS
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));  // Handle preflight requests
 
 // Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Enable CORS
-app.use(cors(corsOptions));
 
 // Routes
 app.use('/api/auth', authRoutes);

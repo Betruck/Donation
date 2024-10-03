@@ -1,3 +1,6 @@
+// Define the backend API URL
+const backendApiUrl = 'https://donation-production.up.railway.app/api/auth'; // Replace with your actual backend API URL
+
 /* 1. Signup functionality */
 const signupForm = document.getElementById('signup-form');
 signupForm?.addEventListener('submit', async (event) => {
@@ -8,7 +11,7 @@ signupForm?.addEventListener('submit', async (event) => {
         password: document.getElementById('password').value,
     };
     try {
-        const response = await fetch('https://donation-production.up.railway.app/api/auth/register', {
+        const response = await fetch(`${backendApiUrl}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
@@ -35,7 +38,7 @@ loginForm?.addEventListener('submit', async (event) => {
         password: document.getElementById('password').value,
     };
     try {
-        const response = await fetch('https://donation-production.up.railway.app/api/auth/login', {
+        const response = await fetch(`${backendApiUrl}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
@@ -130,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (storedUser) {
         const user = JSON.parse(storedUser);
         if(user && user.username) {
-        replaceAuthButtonsWithUsername(user.username);
+            replaceAuthButtonsWithUsername(user.username);
         } else {
             console.error('User object is missing username');
         }

@@ -11,7 +11,7 @@ signupForm?.addEventListener('submit', async (event) => {
         password: document.getElementById('password').value,
     };
     try {
-        const response = await fetch(`${backendApiUrl}api/auth/register`, {
+        const response = await fetch(`${backendApiUrl}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
@@ -38,7 +38,7 @@ loginForm?.addEventListener('submit', async (event) => {
         password: document.getElementById('password').value,
     };
     try {
-        const response = await fetch(`${backendApiUrl}api/auth/login`, {
+        const response = await fetch(`${backendApiUrl}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
